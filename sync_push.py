@@ -1,16 +1,27 @@
 # -*- coding: utf-8 -*-
-"""从桌面《余额.xlsx》导出 data.json 并推送到 GitHub（更新 Pages）。"""
+"""从桌面《余额.xlsx》导出 data.json 并推送到 GitHub（更新 Pages）。全程无窗口。"""
 import json
 import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-PARENT = ROOT.parent  # xlsx/
+PARENT = ROOT.parent
 sys.path.insert(0, str(PARENT))
 import server  # noqa: E402
 
 REMOTE = "https://github.com/Bury-HUI/-.git"
+NO_WINDOW = 0x08000000  # CREATE_NO_WINDOW
+
+
+def _run(cmd, **kw):
+    return subprocess.run(
+        cmd,
+        cwd=str(ROOT),
+        creationflags=NO_WINDOW if sys.platform == "win32" else 0,
+        **kw,
+    )
+
 
 def export():
     d = server.load_payload()
@@ -23,22 +34,26 @@ def export():
     (ROOT / "data.json").write_text(
         json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    print("data.json 已导出", out["summary"]["latest_date"], out["summary"]["total"])
+    print("data.json", out["summary"]["latest_date"], out["summary"]["total"])
+
 
 def push():
-    subprocess.run(["git", "add", "data.json"], cwd=ROOT, check=False)
-    subprocess.run(
-        ["git", "-c", "user.name=zhangjiahui", "-c", "user.email=zhangjiahui@users.noreply.github.com",
-         "commit", "-m", "update balance data"],
-        cwd=ROOT, check=False,
+    _run(["git", "add", "data.json"], check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    _run(
+        [
+            "git", "-c", "user.name=zhangjiahui",
+            "-c", "user.email=zhangjiahui@users.noreply.github.com",
+            "commit", "-m", "update balance data",
+        ],
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
-    subprocess.run(["git", "remote", "remove", "origin"], cwd=ROOT, check=False)
-    subprocess.run(["git", "remote", "add", "origin", REMOTE], cwd=ROOT, check=False)
-    r = subprocess.run(["git", "push", "origin", "main"], cwd=ROOT)
-    if r.returncode == 0:
-        print("已推送 GitHub，Pages 约 1 分钟内更新")
-    else:
-        print("push 失败，请检查网络/登录")
+    _run(["git", "remote", "remove", "origin"], check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    _run(["git", "remote", "add", "origin", REMOTE], check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    r = _run(["git", "push", "origin", "main"], check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    print("push", "ok" if r.returncode == 0 else "fail")
+
 
 if __name__ == "__main__":
     export()
