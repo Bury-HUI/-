@@ -1,10 +1,16 @@
-﻿# 余额台账（网页）
+# 余额台账（GitHub Pages）
 
-GitHub Pages 只能放静态页面。请把页面「登录」连到你电脑上的同步服务：
+免登录直接打开余额。
 
-1. 电脑运行 `start-internet.bat`
-2. 打开网页后按 F12，控制台执行：
-   `window.API_BASE = "https://你的隧道地址.loca.lt"`
-3. 再登录 root / hui
+## 数据从哪来
+- `data.json` 由桌面《余额.xlsx》导出
+- 在电脑上改表后运行 `sync-push.bat`，网站数据会更新
 
-本地完整版（含 Excel 双向同步）请在电脑上运行 server.py。
+## 更新
+```
+sync-push.bat
+```
+（会重新导出 data.json 并 push 到 GitHub）
+
+## 访问
+https://bury-hui.github.io/-/
