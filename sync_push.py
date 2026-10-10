@@ -10,7 +10,7 @@ PARENT = ROOT.parent
 sys.path.insert(0, str(PARENT))
 import server  # noqa: E402
 
-REMOTE = "https://github.com/Bury-HUI/-.git"
+REMOTE = "https://github.com/Bury-HUI/GitHub-Pages.git"
 NO_WINDOW = 0x08000000  # CREATE_NO_WINDOW
 
 

@@ -13,4 +13,4 @@ sync-push.bat
 （会重新导出 data.json 并 push 到 GitHub）
 
 ## 访问
-https://bury-hui.github.io/-/
+https://bury-hui.github.io/GitHub-Pages/
